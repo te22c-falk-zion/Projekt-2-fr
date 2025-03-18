@@ -6,14 +6,27 @@ using UnityEngine.UI;
 public class walkController : MonoBehaviour
 {
     
+
+
     Vector2 moveInput;
 
+    public Rigidbody rb;
+
+    [Header("Movement")]
     [SerializeField]
     float Speed = 7;
     [SerializeField]
     float walkSpeed = 5;
     [SerializeField]
     float runSpeed = 10;
+
+    [Header("Checkers")]
+    public CollisionDetectorRaycast bottomCollider;
+    public CollisionDetectorRaycast leftCollider;
+    public CollisionDetectorRaycast rightCollider;
+
+
+    [Header("Jumping")]
     [SerializeField]
     float jumpforce = 100;
     float velocityY = 0;
@@ -22,6 +35,7 @@ public class walkController : MonoBehaviour
     void Start()
     {
         controller = GetComponent<CharacterController>();
+        rb = GetComponent<Rigidbody>();
     }
 
     void Update()

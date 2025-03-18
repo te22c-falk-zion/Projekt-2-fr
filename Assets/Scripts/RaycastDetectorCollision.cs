@@ -1,7 +1,5 @@
 using UnityEngine;
 
-
-// Jag skapade inte denna kod!!
 public class CollisionDetectorRaycast : MonoBehaviour
 {
     public LayerMask detectionLayers; // Select layers from the inspector
