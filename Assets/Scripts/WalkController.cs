@@ -26,7 +26,6 @@ public class walkController : MonoBehaviour
     [SerializeField]
     float runSpeed = 10;
     [SerializeField]
-    float speedMult = 1;
     private bool isGrounded;
     Vector2 moveInput;
 
@@ -46,7 +45,9 @@ public class walkController : MonoBehaviour
     
 
     [Header("Boosts")]
-    int combo;
+    public float combo;
+    public float speedMult = 1;
+    float bulletReach = 20;
 
 
     CharacterController controller;
@@ -121,7 +122,7 @@ public class walkController : MonoBehaviour
         head.transform.position,
          head.transform.forward,
          out hit,
-         10)
+         bulletReach)
          )
          {
             TargetController target = hit.transform.GetComponent<TargetController>();
@@ -129,6 +130,10 @@ public class walkController : MonoBehaviour
             {
                 target.SpeedBoost();
                 target.DeleteMe();
+            }
+            if (target == null)
+            {
+                combo = 0;
             }
          }
 

@@ -5,10 +5,10 @@ using UnityEngine;
 
 public class TargetController : MonoBehaviour
 {
-    // Start is called before the first frame update
+    walkController controller;
     void Start()
     {
-        
+        controller = GetComponent<walkController>();
     }
 
     // Update is called once per frame
@@ -19,6 +19,8 @@ public class TargetController : MonoBehaviour
 
     public void SpeedBoost()
     {
+        controller.combo += 1;
+        controller.speedMult = controller.combo/10;
         print("Not yet okay?");
 
         
