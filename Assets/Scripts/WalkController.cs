@@ -1,16 +1,15 @@
+
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.Scripting.APIUpdating;
 using UnityEngine.UI;
-
 public class walkController : MonoBehaviour
 {
     
 
 
     Vector2 moveInput;
-
-    public Rigidbody rb;
 
     [Header("Movement")]
     [SerializeField]
@@ -19,6 +18,7 @@ public class walkController : MonoBehaviour
     float walkSpeed = 5;
     [SerializeField]
     float runSpeed = 10;
+    private bool isGrounded;
 
     [Header("Checkers")]
     public CollisionDetectorRaycast bottomCollider;
@@ -30,43 +30,55 @@ public class walkController : MonoBehaviour
     [SerializeField]
     float jumpforce = 100;
     float velocityY = 0;
+    bool jumpStart = false;
 
     CharacterController controller;
     void Start()
     {
         controller = GetComponent<CharacterController>();
-        rb = GetComponent<Rigidbody>();
     }
 
     void Update()
     {
-        velocityY += Physics.gravity.y * Time.deltaTime;
 
-        if (controller.isGrounded)
-        {
-            velocityY = 0;
-        }
+
+        velocityY += Physics.gravity.y * Time.deltaTime;
 
         Vector3 movement =
         transform.right * moveInput.x
         + transform.forward * moveInput.y;
         
         movement.y = velocityY;
-
-        Run();
         
   
         controller.Move(Time.deltaTime * Speed * movement);
         
+    }
 
-        
+    void FixedUpdate()
+    {
+        Run();
+
+        SetIsGrounded(bottomCollider.IsColliding);
         
     }
 
     void OnJump(InputValue value)
     {
         print("Jump around!");
-        velocityY = jumpforce;
+        jumpStart = true;
+
+        if(jumpStart)
+        {
+            jumpStart = false;
+
+            if(!isGrounded) return;
+            print("I made it");
+
+            velocityY = jumpforce;
+        }
+
+
     }
     void OnMove(InputValue value) => moveInput = value.Get<Vector2>();
 
@@ -76,5 +88,11 @@ public class walkController : MonoBehaviour
         {Speed = runSpeed;}
         else if (!Input.GetButton("Run"))
         {Speed = walkSpeed;}
+    }
+
+    void SetIsGrounded(bool state)
+    {
+        isGrounded = state;
+
     }
 }
