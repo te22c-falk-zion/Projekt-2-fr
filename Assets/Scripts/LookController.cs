@@ -41,20 +41,20 @@ public class lookController : MonoBehaviour
         lookinput = value.Get<Vector2>();
     }
 
-    void OnUse(InputValue value)
+    void OnFire(InputValue value)
     {
         RaycastHit hit;
         if(Physics.Raycast(
         head.transform.position,
          head.transform.forward,
          out hit,
-         1)
+         10)
          )
          {
-            ButtonController button = hit.transform.GetComponent<ButtonController>();
-            if (button != null)
+            TargetController target = hit.transform.GetComponent<TargetController>();
+            if (target != null)
             {
-                button.Press();
+                target.SpeedBoost();
             }
          }
 

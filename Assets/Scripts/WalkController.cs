@@ -32,6 +32,13 @@ public class walkController : MonoBehaviour
     float velocityY = 0;
     bool jumpStart = false;
 
+    [Header("Sliding")]
+    
+
+    [Header("Boosts")]
+    int combo;
+
+
     CharacterController controller;
     void Start()
     {
