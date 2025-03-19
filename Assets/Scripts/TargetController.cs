@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class TargetController : MonoBehaviour
@@ -19,7 +20,11 @@ public class TargetController : MonoBehaviour
     public void SpeedBoost()
     {
         print("Not yet okay?");
+
         
-        
+    }
+    public void DeleteMe()
+    {
+        Destroy(this.gameObject);
     }
 }
