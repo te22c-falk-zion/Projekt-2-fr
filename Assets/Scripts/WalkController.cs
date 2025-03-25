@@ -20,11 +20,12 @@ public class walkController : MonoBehaviour
 
     [Header("Movement")]
     [SerializeField]
-    float Speed = 7;
+    public float Speed = 5;
     [SerializeField]
-    float walkSpeed = 5;
+    public float walkSpeed = 5;
     [SerializeField]
-    float runSpeed = 10;
+    public float runSpeed = 10;
+    public float storeSpeed;
     [SerializeField]
     private bool isGrounded;
     Vector2 moveInput;
@@ -42,10 +43,15 @@ public class walkController : MonoBehaviour
     bool jumpStart = false;
 
     [Header("Sliding")]
-    
+    [SerializeField]
+    float slideMult = 1.20f;
+    float timerCounter = 0.0f;
+    float timetoslide = 2.5F;
+    private bool isSliding;
 
     [Header("Boosts")]
     public float combo;
+    public float comboMult;
     public float speedMult = 1;
     float bulletReach = 20;
 
@@ -92,6 +98,7 @@ public class walkController : MonoBehaviour
         if(jumpStart)
         {
             jumpStart = false;
+            isSliding = false;
 
             if(!isGrounded) return;
             print("I made it");
@@ -106,6 +113,40 @@ public class walkController : MonoBehaviour
         lookinput = value.Get<Vector2>();
     }
     void OnMove(InputValue value) => moveInput = value.Get<Vector2>();
+    void OnSlide()
+    {
+        
+        if(!isGrounded) return;
+        if(isSliding) return;
+
+        StartSliding();
+
+        if(isSliding && timerCounter < timetoslide)
+        {
+            print("Im  here now");
+            storeSpeed = Speed;
+            Speed *= slideMult;
+        }
+    }
+    void StartSliding()
+    {
+        SetIsSliding(true);
+        timerCounter += Time.deltaTime;
+        var headTransform = head.transform.position;
+
+        headTransform.y = 0.25F;
+
+    }
+
+    void StopSliding()
+    {
+        SetIsSliding(false);
+        var headTransform = head.transform.position;
+        Speed = storeSpeed;
+        
+        headTransform.y = 0.5f;
+        timerCounter = 0.0f;
+    }
 
     public void Run()
     {
@@ -115,7 +156,7 @@ public class walkController : MonoBehaviour
         {Speed = walkSpeed;}
     }
 
-        void OnFire(InputValue value)
+    void OnFire(InputValue value)
     {
         RaycastHit hit;
         if(Physics.Raycast(
@@ -129,20 +170,23 @@ public class walkController : MonoBehaviour
             if (target != null)
             {
                 target.SpeedBoost();
-                target.DeleteMe();
+                // target.DeleteMe();
             }
             if (target == null)
             {
                 combo = 0;
             }
          }
-
     }
 
     void SetIsGrounded(bool state)
     {
         isGrounded = state;
-
+        if (!isGrounded && isSliding) StopSliding();
+    }
+    void SetIsSliding(bool state)
+    {
+        isSliding = state;
     }
 
     void CamMove()
