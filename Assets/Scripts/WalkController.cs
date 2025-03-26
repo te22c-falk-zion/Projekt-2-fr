@@ -1,4 +1,5 @@
 
+using JetBrains.Annotations;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.InputSystem;
@@ -13,6 +14,7 @@ public class walkController : MonoBehaviour
 
     [Header("Camera")]
     Camera head;
+    Camera cam;
     Vector2 lookinput;
     float xRotation = 0;
     [SerializeField]
@@ -25,7 +27,8 @@ public class walkController : MonoBehaviour
     public float walkSpeed = 5;
     [SerializeField]
     public float runSpeed = 10;
-    public float storeSpeed;
+    [SerializeField]
+    public float slideSpeed = 13;
     [SerializeField]
     private bool isGrounded;
     Vector2 moveInput;
@@ -45,9 +48,10 @@ public class walkController : MonoBehaviour
     [Header("Sliding")]
     [SerializeField]
     float slideMult = 1.20f;
-    float timerCounter = 0.0f;
-    float timetoslide = 2.5F;
+    float slideCounter = 0.0f;
+    float timetoslide = 1.7F;
     private bool isSliding;
+
 
     [Header("Boosts")]
     public float combo;
@@ -84,7 +88,9 @@ public class walkController : MonoBehaviour
 
     void FixedUpdate()
     {
+        
         Run();
+        Slide();
 
         SetIsGrounded(bottomCollider.IsColliding);
         
@@ -113,39 +119,41 @@ public class walkController : MonoBehaviour
         lookinput = value.Get<Vector2>();
     }
     void OnMove(InputValue value) => moveInput = value.Get<Vector2>();
-    void OnSlide()
+    void Slide()
     {
-        
-        if(!isGrounded) return;
-        if(isSliding) return;
-
-        StartSliding();
-
-        if(isSliding && timerCounter < timetoslide)
+        if(Input.GetButton("Slide"))
         {
-            print("Im  here now");
-            storeSpeed = Speed;
-            Speed *= slideMult;
+            slideCounter += Time.deltaTime;
+            print(slideCounter);
+            StartSliding();
+        }
+        if (!Input.GetButton("Slide"))
+        {
+            StopSliding();
         }
     }
     void StartSliding()
     {
-        SetIsSliding(true);
-        timerCounter += Time.deltaTime;
-        var headTransform = head.transform.position;
-
+        Vector3 headTransform = Camera.main.transform.position;
+        if(isGrounded && slideCounter < timetoslide)
+        {
         headTransform.y = 0.25F;
+        slideSpeed = Speed * 1.2f;
+        Speed = slideSpeed;
+        }
+        else
+        {
+            StopSliding();
+        }
 
     }
 
     void StopSliding()
     {
-        SetIsSliding(false);
-        var headTransform = head.transform.position;
-        Speed = storeSpeed;
-        
+        Vector3 headTransform = Camera.main.transform.position;
         headTransform.y = 0.5f;
-        timerCounter = 0.0f;
+        slideCounter = 0.0f;
+        
     }
 
     public void Run()

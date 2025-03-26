@@ -424,10 +424,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8c62addb9f0c20a49afc64071755ba54, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  head: {fileID: 0}
-  lookinput: {x: 0, y: 0}
-  xRotation: 0
-  sensitivity: {x: 0.2, y: 0.2}
 --- !u!114 &757163296
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -444,11 +440,17 @@ MonoBehaviour:
   Speed: 7
   walkSpeed: 7
   runSpeed: 15
-  speedMult: 1
+  slideSpeed: 10
+  storeSpeed: 5
+  isGrounded: 0
   bottomCollider: {fileID: 1166004104}
   leftCollider: {fileID: 823688151}
   rightCollider: {fileID: 1931779433}
   jumpforce: 3.5
+  slideMult: 1.2
+  combo: 0
+  comboMult: 0
+  speedMult: 1
 --- !u!136 &757163297
 CapsuleCollider:
   m_ObjectHideFlags: 0

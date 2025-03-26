@@ -23,6 +23,7 @@ public class TargetController : MonoBehaviour
         controller.speedMult = controller.combo/20 + 1;
         controller.walkSpeed *= controller.speedMult;
         controller.runSpeed *= controller.speedMult;
+        controller.slideSpeed *= controller.speedMult;
         
     }
     public void DeleteMe()
