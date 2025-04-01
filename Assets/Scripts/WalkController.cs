@@ -1,4 +1,5 @@
 
+using System.Runtime.InteropServices;
 using JetBrains.Annotations;
 using Unity.VisualScripting;
 using UnityEngine;
@@ -49,7 +50,10 @@ public class walkController : MonoBehaviour
     [SerializeField]
     float slideMult = 1.20f;
     float slideCounter = 0.0f;
-    float timetoslide = 1.7F;
+    float timetoslide = 1.0F;
+    float slideCooldownCounter = 0.0f;
+    float slideCooldown = 0.7f;
+    bool isSlideUp = true;
     private bool isSliding;
 
 
@@ -120,40 +124,47 @@ public class walkController : MonoBehaviour
     }
     void OnMove(InputValue value) => moveInput = value.Get<Vector2>();
     void Slide()
-    {
-        if(Input.GetButton("Slide"))
-        {
-            slideCounter += Time.deltaTime;
-            print(slideCounter);
-            StartSliding();
-        }
-        if (!Input.GetButton("Slide"))
+    {   
+        while(isSlideUp == false)
         {
             StopSliding();
+        }
+        if(Input.GetButton("Slide") && isSlideUp == true)
+        {
+            print("sC"+ slideCounter);
+            print(isSlideUp);
+            print("cd" +slideCooldownCounter);
+            StartSliding();
         }
     }
     void StartSliding()
     {
         Vector3 headTransform = Camera.main.transform.position;
-        if(isGrounded && slideCounter < timetoslide)
-        {
-        headTransform.y = 0.25F;
-        slideSpeed = Speed * 1.2f;
-        Speed = slideSpeed;
-        }
-        else
+        if(slideCounter > timetoslide)
         {
             StopSliding();
+        }
+        if(isGrounded && slideCounter < timetoslide)
+        {
+            slideCounter += Time.deltaTime;
+            headTransform.y = 0.25F;
+            slideSpeed = Speed * slideMult;
+            Speed = slideSpeed;
         }
 
     }
 
     void StopSliding()
     {
+        isSlideUp = false;
         Vector3 headTransform = Camera.main.transform.position;
-        headTransform.y = 0.5f;
-        slideCounter = 0.0f;
         
+        while (isSlideUp == false)
+        {
+            headTransform.y = 0.5f;
+            slideCooldownCounter += Time.deltaTime;
+            if(slideCooldownCounter > slideCooldown) {slideCounter = 0.0f;slideCooldownCounter = 0.0f;isSlideUp = true;}
+        }
     }
 
     public void Run()
