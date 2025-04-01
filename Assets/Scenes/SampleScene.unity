@@ -441,13 +441,12 @@ MonoBehaviour:
   walkSpeed: 7
   runSpeed: 15
   slideSpeed: 10
-  storeSpeed: 5
   isGrounded: 0
   bottomCollider: {fileID: 1166004104}
   leftCollider: {fileID: 823688151}
   rightCollider: {fileID: 1931779433}
   jumpforce: 3.5
-  slideMult: 1.2
+  slideMult: 1.4
   combo: 0
   comboMult: 0
   speedMult: 1

@@ -125,25 +125,22 @@ public class walkController : MonoBehaviour
     void OnMove(InputValue value) => moveInput = value.Get<Vector2>();
     void Slide()
     {   
-        while(isSlideUp == false)
+        if(isSlideUp == false)
         {
             StopSliding();
         }
-        if(Input.GetButton("Slide") && isSlideUp == true)
+        if(isSlideUp == true)
         {
-            print("sC"+ slideCounter);
-            print(isSlideUp);
-            print("cd" +slideCooldownCounter);
-            StartSliding();
+            if(Input.GetButton("Slide"))
+            {
+                StartSliding();
+            }
         }
     }
     void StartSliding()
     {
         Vector3 headTransform = Camera.main.transform.position;
-        if(slideCounter > timetoslide)
-        {
-            StopSliding();
-        }
+
         if(isGrounded && slideCounter < timetoslide)
         {
             slideCounter += Time.deltaTime;
@@ -151,20 +148,26 @@ public class walkController : MonoBehaviour
             slideSpeed = Speed * slideMult;
             Speed = slideSpeed;
         }
-
+        if(slideCounter > timetoslide)
+        {
+            StopSliding();
+        }
     }
 
     void StopSliding()
     {
         isSlideUp = false;
         Vector3 headTransform = Camera.main.transform.position;
-        
-        while (isSlideUp == false)
+        headTransform.y = 0.5f;
+        slideCooldownCounter += Time.deltaTime;
+        if(slideCooldownCounter > slideCooldown) 
         {
-            headTransform.y = 0.5f;
-            slideCooldownCounter += Time.deltaTime;
-            if(slideCooldownCounter > slideCooldown) {slideCounter = 0.0f;slideCooldownCounter = 0.0f;isSlideUp = true;}
+            isSlideUp = true;
+            slideCounter = 0.0f;
+            slideCooldownCounter = 0.0f;
+            
         }
+
     }
 
     public void Run()
