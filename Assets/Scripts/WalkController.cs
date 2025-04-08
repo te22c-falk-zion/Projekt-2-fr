@@ -6,6 +6,7 @@ using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.Scripting.APIUpdating;
 using UnityEngine.UI;
+using TMPro;
 public class walkController : MonoBehaviour
 {
     
@@ -15,7 +16,7 @@ public class walkController : MonoBehaviour
 
     [Header("Camera")]
     Camera head;
-    Camera cam;
+    public Transform cameraHolder;
     Vector2 lookinput;
     float xRotation = 0;
     [SerializeField]
@@ -60,8 +61,9 @@ public class walkController : MonoBehaviour
     [Header("Boosts")]
     public float combo;
     public float comboMult;
+    public bool hasCombo = false;
     public float speedMult = 1;
-    float bulletReach = 20;
+    float bulletReach = 100;
 
 
     CharacterController controller;
@@ -139,12 +141,11 @@ public class walkController : MonoBehaviour
     }
     void StartSliding()
     {
-        Vector3 headTransform = Camera.main.transform.position;
-
+        Vector3 headTransform = cameraHolder.localPosition;
         if(isGrounded && slideCounter < timetoslide)
         {
             slideCounter += Time.deltaTime;
-            headTransform.y = 0.25F;
+            headTransform.y = -0.9f;
             slideSpeed = Speed * slideMult;
             Speed = slideSpeed;
         }
@@ -157,8 +158,8 @@ public class walkController : MonoBehaviour
     void StopSliding()
     {
         isSlideUp = false;
-        Vector3 headTransform = Camera.main.transform.position;
-        headTransform.y = 0.5f;
+        Vector3 headTransform = cameraHolder.localPosition;
+        headTransform.y = 0.0f;
         slideCooldownCounter += Time.deltaTime;
         if(slideCooldownCounter > slideCooldown) 
         {
@@ -172,10 +173,18 @@ public class walkController : MonoBehaviour
 
     public void Run()
     {
+        if (combo > 0)
+        {
+            hasCombo = true;
+        }
         if (Input.GetButton("Run"))
         {Speed = runSpeed;}
         else if (!Input.GetButton("Run"))
         {Speed = walkSpeed;}
+        if (Input.GetButton("Run") && hasCombo == true)
+        {Speed = runSpeed * speedMult;}
+        else if (!Input.GetButton("Run") && hasCombo == true)
+        {Speed = walkSpeed * speedMult;}
     }
 
     void OnFire(InputValue value)
@@ -192,11 +201,12 @@ public class walkController : MonoBehaviour
             if (target != null)
             {
                 target.SpeedBoost();
-                // target.DeleteMe();
+                target.DeleteMe();
             }
             if (target == null)
             {
                 combo = 0;
+                hasCombo = false;
             }
          }
     }
