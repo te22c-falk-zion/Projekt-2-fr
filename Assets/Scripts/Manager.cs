@@ -31,10 +31,9 @@ public class Manager : MonoBehaviour
             timer = (int)floatTimer;
             textTime.text = timer.ToString();
         }
-        if(SceneManager.GetActiveScene().name == "WinScene")
-        {
-            textTime.text = "Time: " + timer;
-        }               
+        else{textTime.text = "Time: " + timer;}      
+        
+                 
         if (controller.combo > highestCombo)
         {
             highestCombo = controller.combo;
