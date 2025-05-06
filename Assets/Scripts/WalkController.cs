@@ -7,6 +7,7 @@ using UnityEngine.InputSystem;
 using UnityEngine.Scripting.APIUpdating;
 using UnityEngine.UI;
 using TMPro;
+using UnityEngine.SceneManagement;
 public class walkController : MonoBehaviour
 {
     
@@ -21,6 +22,10 @@ public class walkController : MonoBehaviour
     float xRotation = 0;
     [SerializeField]
     Vector2 sensitivity = Vector2.one;
+    [SerializeField]
+    bool CameraDown = false;
+    [SerializeField]
+    bool hasloweredcamera = false;
 
     [Header("Movement")]
     [SerializeField]
@@ -63,7 +68,7 @@ public class walkController : MonoBehaviour
     public float comboMult;
     public bool hasCombo = false;
     public float speedMult = 1;
-    float bulletReach = 100;
+    float bulletReach = 200;
 
 
     CharacterController controller;
@@ -72,6 +77,8 @@ public class walkController : MonoBehaviour
         controller = GetComponent<CharacterController>();
         head = GetComponentInChildren<Camera>();
         Cursor.lockState = CursorLockMode.Locked;
+        Camera.main.transform.Translate(0,-0.4f,0);
+        CameraDown = true;
     }
 
     void Update()
@@ -94,10 +101,17 @@ public class walkController : MonoBehaviour
 
     void FixedUpdate()
     {
-        
         Run();
         Slide();
 
+        if(CameraDown && !hasloweredcamera)
+        {
+            print("Should be lowering camera.");
+        }
+        if(!CameraDown && hasloweredcamera)
+        {
+            print("Camera should go up.");
+        }
         SetIsGrounded(bottomCollider.IsColliding);
         
     }
@@ -129,23 +143,31 @@ public class walkController : MonoBehaviour
     {   
         if(isSlideUp == false)
         {
+            hasloweredcamera = false;
             StopSliding();
         }
         if(isSlideUp == true)
         {
             if(Input.GetButton("Slide"))
             {
+                CameraDown = true;
                 StartSliding();
+                
             }
         }
     }
     void StartSliding()
     {
-        Vector3 headTransform = cameraHolder.localPosition;
         if(isGrounded && slideCounter < timetoslide)
         {
+            
+            if (CameraDown && !hasloweredcamera)
+            {
+                Camera.main.transform.Translate(0,-0.3f,0);
+                hasloweredcamera = true;
+                CameraDown = false;
+            }
             slideCounter += Time.deltaTime;
-            headTransform.y = -0.9f;
             slideSpeed = Speed * slideMult;
             Speed = slideSpeed;
         }
@@ -157,18 +179,23 @@ public class walkController : MonoBehaviour
 
     void StopSliding()
     {
+        CameraDown = false;
         isSlideUp = false;
-        Vector3 headTransform = cameraHolder.localPosition;
-        headTransform.y = 0.0f;
+        if(!CameraDown && hasloweredcamera)
+        {
+            Camera.main.transform.Translate(0,0.3f,0);
+            hasloweredcamera = false;
+        }
+        
         slideCooldownCounter += Time.deltaTime;
         if(slideCooldownCounter > slideCooldown) 
         {
             isSlideUp = true;
+            CameraDown = true;
             slideCounter = 0.0f;
             slideCooldownCounter = 0.0f;
             
         }
-
     }
 
     public void Run()
@@ -187,6 +214,15 @@ public class walkController : MonoBehaviour
         {Speed = walkSpeed * speedMult;}
     }
 
+    private void OnCollisionEnter(Collision collision)
+    {
+        Debug.Log("collided with: " + collision.gameObject.name);
+        if(collision.gameObject.CompareTag("Goal"))
+        {
+            SceneManager.LoadScene(1);
+        }
+    }
+
     void OnFire(InputValue value)
     {
         RaycastHit hit;
@@ -197,17 +233,21 @@ public class walkController : MonoBehaviour
          bulletReach)
          )
          {
+            print("I hit something.");
             TargetController target = hit.transform.GetComponent<TargetController>();
-            if (target != null)
-            {
-                target.SpeedBoost();
-                target.DeleteMe();
-            }
             if (target == null)
             {
+                print("Im here rn");
                 combo = 0;
                 hasCombo = false;
             }
+            if (target != null)
+            {
+                print("Hit target and found target.");
+                target.SpeedBoost();
+                target.DeleteMe();
+            }
+
          }
     }
 
@@ -232,6 +272,5 @@ public class walkController : MonoBehaviour
 
         transform.Rotate(Vector3.up, lookinput.x * sensitivity.x);
     }
-
     
 }

@@ -13,15 +13,15 @@ public class TargetSpawner : MonoBehaviour
     void Start()
     {
         targetsParent = GameObject.Find("Targets").transform;
+                for (int i = 0; i < TargetAmount; i++)
+        {
+            SpawnTargets();
+        }
     }
 
     // Update is called once per frame
     void Update()
     {
-        if (TargetsSpawned < TargetAmount)
-        {
-        SpawnTargets();
-        }
     }
     Vector3 RandomPosition()
     {
