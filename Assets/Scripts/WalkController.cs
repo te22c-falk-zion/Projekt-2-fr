@@ -78,7 +78,6 @@ public class walkController : MonoBehaviour
         head = GetComponentInChildren<Camera>();
         Cursor.lockState = CursorLockMode.Locked;
         Camera.main.transform.Translate(0,-0.4f,0);
-        CameraDown = true;
     }
 
     void Update()
@@ -95,7 +94,22 @@ public class walkController : MonoBehaviour
         movement.y = velocityY;
         
   
-        controller.Move(Time.deltaTime * Speed * movement);
+        controller.Move(Time.deltaTime * Speed * movement);        
+        
+        if (CameraDown == false && hasloweredcamera == true)
+        {
+            //camera stays up
+            Camera.main.transform.Translate(0,0.3f,0);
+            hasloweredcamera = false;
+        }
+
+        if(Input.GetKeyDown(KeyCode.Q) && CameraDown == true && hasloweredcamera == false)
+        {
+            //camera moves down a bit
+            Camera.main.transform.Translate(0,-0.3f,0);
+            hasloweredcamera = true;
+        }
+
         
     }
 
@@ -143,16 +157,13 @@ public class walkController : MonoBehaviour
     {   
         if(isSlideUp == false)
         {
-            hasloweredcamera = false;
             StopSliding();
         }
         if(isSlideUp == true)
         {
             if(Input.GetButton("Slide"))
             {
-                CameraDown = true;
                 StartSliding();
-                
             }
         }
     }
@@ -160,19 +171,14 @@ public class walkController : MonoBehaviour
     {
         if(isGrounded && slideCounter < timetoslide)
         {
-            
-            if (CameraDown && !hasloweredcamera)
-            {
-                Camera.main.transform.Translate(0,-0.3f,0);
-                hasloweredcamera = true;
-                CameraDown = false;
-            }
+            CameraDown = true;
             slideCounter += Time.deltaTime;
             slideSpeed = Speed * slideMult;
             Speed = slideSpeed;
         }
         if(slideCounter > timetoslide)
         {
+            CameraDown = false;
             StopSliding();
         }
     }
@@ -180,18 +186,11 @@ public class walkController : MonoBehaviour
     void StopSliding()
     {
         CameraDown = false;
-        isSlideUp = false;
-        if(!CameraDown && hasloweredcamera)
-        {
-            Camera.main.transform.Translate(0,0.3f,0);
-            hasloweredcamera = false;
-        }
-        
+        isSlideUp = false;        
         slideCooldownCounter += Time.deltaTime;
         if(slideCooldownCounter > slideCooldown) 
         {
             isSlideUp = true;
-            CameraDown = true;
             slideCounter = 0.0f;
             slideCooldownCounter = 0.0f;
             
